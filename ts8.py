@@ -1,7 +1,7 @@
 # from flask import Flask, jsonify, render_template
 from ts6 import *
 from fastapi import FastAPI
-
+from typing import Union
 s = starter("dan")
 base = s
 
@@ -57,23 +57,14 @@ def get_list(id):
     else:
         return baselist2[int(id)-1]
 
-    # @app.route("/spec/format=json",methods=['POST'])
-    # def update_list():
-    #     new_one = request.json
-    #     baselist2.append(new_one)
-    #     return jsonify(baselist2)
+@app.post("/spec/format=json")
+def update_list(name:str,value:str, id: Union[int,None]=None):
+    new_one = {name:value, "id":id}
+    baselist2.append(new_one)
+    return baselist2
 
-    # @app.route('/spec/format=json/<int:baselist_id>',methods=['PUT'])
-    # def update_spec(baselist_id):
-    #     item = next((x for x in baselist2 if x["id"] == baselist_id), None)
-    #     params = request.json
-    #     if not item:
-    #         return {"mess":"No id"}, 400
-    #     item.update(params)
-    #     return item
-
-    # @app.route('/spec/format=json/<int:baselist_id>',methods=['DELETE'])
-    # def delete_spec(baselist_id):
-    #     ind, _ = next((x for x in enumerate(baselist2) if x[1]["id"] == baselist_id), (None, None))
-    #     baselist2.pop(ind)
-    #     return "", 204
+@app.delete('/spec/format=json/{baselist_id}')
+def delete_spec(baselist_id):
+    ind, _ = next((x for x in enumerate(baselist2) if x[1]["id"] == int(baselist_id)), (None, None))
+    baselist2.pop(ind)
+    return baselist2
